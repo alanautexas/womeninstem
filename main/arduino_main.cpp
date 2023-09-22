@@ -10,7 +10,6 @@ You may obtain a copy of the License at
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
 limitations under the License.
 ****************************************************************************/
 
@@ -75,7 +74,6 @@ void onDisconnectedGamepad(GamepadPtr gp) {
             break;
         }
     }
-
     if (!foundGamepad) {
         // Console.println("CALLBACK: Gamepad disconnected, but not found in myGamepads");
     }
@@ -132,7 +130,6 @@ void loop() {
     // This guarantees that the gamepad is valid and connected.
     for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
         GamepadPtr myGamepad = myGamepads[i];
-
         if (myGamepad && myGamepad->isConnected()) {
 
             servo.write( ((((float) myGamepad->axisY()) / 512.0f) * 500) + 1500 );
