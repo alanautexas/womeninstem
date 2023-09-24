@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ****************************************************************************/
+#define LED 2
 
 #include "sdkconfig.h"
 #ifndef CONFIG_BLUEPAD32_PLATFORM_ARDUINO
@@ -87,6 +88,9 @@ QTRSensors qtr;
 
 // Arduino setup function. Runs in CPU 1
 void setup() {
+//pinmode (LED, INPUT);
+pinMode (LED, OUTPUT);
+
     // Console.printf("Firmware: %s\n", BP32.firmwareVersion());
 
     // Setup the Bluepad32 callbacks
@@ -97,6 +101,7 @@ void setup() {
     // Calling "forgetBluetoothKeys" in setup() just as an example.
     // Forgetting Bluetooth keys prevents "paired" gamepads to reconnect.
     // But might also fix some connection / re-connection issues.
+
     BP32.forgetBluetoothKeys();
 
     ESP32PWM::allocateTimer(0);
@@ -106,8 +111,8 @@ void setup() {
     servo.setPeriodHertz(50);
     servo.attach(12, 1000, 2000);
 
-    // Serial.begin(115200);
-    // sensor1.setFilterRate(0.1f);
+    Serial.begin(115200);
+    sensor1.setFilterRate(0.1f);
 
     // qtr.setTypeRC(); // or setTypeAnalog()
     // qtr.setSensorPins((const uint8_t[]) {12,13,14}, 3);
@@ -119,6 +124,14 @@ void setup() {
     // }
     // qtr.calibrate();
 }
+void ledloop(){
+for (int i= 0; i < 2; i++){
+    digitalWrite(LED, HIGH);
+    delay(100);
+digitalWrite(LED, LOW);
+delay(100);
+}
+}
 
 // Arduino loop function. Runs in CPU 1
 void loop() {
@@ -127,6 +140,7 @@ void loop() {
     // The gamepads pointer (the ones received in the callbacks) gets updated
     // automatically.
     BP32.update();
+    ledloop();
 
     // It is safe to always do this before using the gamepad API.
     // This guarantees that the gamepad is valid and connected.
