@@ -86,7 +86,8 @@ QTRSensors qtr;
 
 // Arduino setup function. Runs in CPU 1
 void setup() {
-//pinmode (LED, INPUT);
+servo.setPeriodHertz(50);
+servo.attach(13,1000,2000);
 pinMode (LED, OUTPUT);
 
     // Console.printf("Firmware: %s\n", BP32.firmwareVersion());
@@ -94,23 +95,12 @@ pinMode (LED, OUTPUT);
     // Setup the Bluepad32 callbacks
     BP32.setup(&onConnectedGamepad, &onDisconnectedGamepad);
 
-    // "forgetBluetoothKeys()" should be called when the user performs
-    // a "device factory reset", or similar.
-    // Calling "forgetBluetoothKeys" in setup() just as an example.
-    // Forgetting Bluetooth keys prevents "paired" gamepads to reconnect.
-    // But might also fix some connection / re-connection issues.
+    
 
     BP32.forgetBluetoothKeys();
 
-    ESP32PWM::allocateTimer(0);
-	ESP32PWM::allocateTimer(1);
-	ESP32PWM::allocateTimer(2);
-	ESP32PWM::allocateTimer(3);
-    servo.setPeriodHertz(50);
-    servo.attach(12, 1000, 2000);
-
-    Serial.begin(115200);
-    sensor1.setFilterRate(0.1f);
+    // Serial.begin(115200);
+    // sensor1.setFilterRate(0.1f);
 
     // qtr.setTypeRC(); // or setTypeAnalog()
     // qtr.setSensorPins((const uint8_t[]) {12,13,14}, 3);
@@ -131,22 +121,32 @@ delay(100);
 }
 }
 
-// Arduino loop function. Runs in CPU 1
+
 void loop() {
     // This call fetches all the gamepad info from the NINA (ESP32) module.
     // Just call this function in your main loop.
     // The gamepads pointer (the ones received in the callbacks) gets updated
     // automatically.
     BP32.update();
-    ledloop();
+    // ledloop();
+
+   /* servo.write(5000);
+    delay(1000);
+    servo.write(2000);
+    delay(1000);*/
+    GamepadPtr controller = myGamepads[0];
+    if(controller && controller ->isConnected()){
+        servo.write(((((float) controller -> axisY())/512.0f)*500) +1500);
+    }
+   
 
     // It is safe to always do this before using the gamepad API.
     // This guarantees that the gamepad is valid and connected.
-    for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
-        GamepadPtr myGamepad = myGamepads[i];
-        if (myGamepad && myGamepad->isConnected()) {
+    //for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
+       // GamepadPtr myGamepad = myGamepads[i];
+       // if (myGamepad && myGamepad->isConnected()) {
 
-            servo.write( ((((float) myGamepad->axisY()) / 512.0f) * 500) + 1500 );
+           // servo.write( ((((float) myGamepad->axisY()) / 512.0f) * 500) + 1500 );
 
             // Another way to query the buttons, is by calling buttons(), or
             // miscButtons() which return a bitmask.
@@ -168,8 +168,8 @@ void loop() {
 
             // You can query the axis and other properties as well. See Gamepad.h
             // For all the available functions.
-        }
-    }
+       // }
+   // }
 
     // Serial.println(sensor1.getDistanceFloat());
 
