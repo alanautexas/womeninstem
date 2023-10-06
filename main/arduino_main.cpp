@@ -130,10 +130,10 @@ void loop() {
     BP32.update();
     // ledloop();
 
-   /* servo.write(5000);
+   servo.write(2000);
     delay(1000);
     servo.write(2000);
-    delay(1000);*/
+    delay(1000);
     GamepadPtr controller = myGamepads[0];
     if(controller && controller ->isConnected()){
         servo.write(((((float) controller -> axisY())/512.0f)*500) +1500);
