@@ -80,15 +80,21 @@ void onDisconnectedGamepad(GamepadPtr gp) {
     }
 }
 
-Servo servo;
+Servo servoleft;
+Servo servoright;
 ESP32SharpIR sensor1( ESP32SharpIR::GP2Y0A21YK0F, 27);
 QTRSensors qtr;
 
 // Arduino setup function. Runs in CPU 1
 void setup() {
-servo.setPeriodHertz(50);
-servo.attach(13,1000,2000);
+servoleft.setPeriodHertz(50);
+servoleft.attach(13,1000,2000);
 pinMode (LED, OUTPUT);
+servoright.setPeriodHertz(50);
+servoright.attach(14,1000,2000);
+
+
+
 
     // Console.printf("Firmware: %s\n", BP32.firmwareVersion());
 
@@ -120,7 +126,20 @@ digitalWrite(LED, LOW);
 delay(100);
 }
 }
+ GamepadPtr controller = myGamepads[0];
+void rightservo(){
+servoright.write(((((float) controller -> axisY())/512.0f)*500) +1500);
+}
 
+void leftservo(){
+servoleft.write(((((float) controller -> axisY())/512.0f)*500) +1500);
+}
+
+void gostraigt() {
+
+}
+
+#define DEFAULT_SPEED 2000
 
 void loop() {
     // This call fetches all the gamepad info from the NINA (ESP32) module.
@@ -130,13 +149,31 @@ void loop() {
     BP32.update();
     // ledloop();
 
-   servo.write(2000);
+    /*servoleft.write(2000);
+    servoright.write(1000);
     delay(1000);
-    servo.write(2000);
-    delay(1000);
-    GamepadPtr controller = myGamepads[0];
+    servoleft.write(1000);
+    servoright.write(2000);
+    delay(1000);*/
+
+
+ 
+    
+
+   
     if(controller && controller ->isConnected()){
-        servo.write(((((float) controller -> axisY())/512.0f)*500) +1500);
+        // Console.printf() // << to see values of controller
+        float controller_value_y = ((float) controller -> axisY()/512.0f)*500;
+        float controller_value_x = ((float) controller -> axisX()/512.0f)*500;
+
+        if((((float) controller -> axisY())/512.0f)*500) {
+            gostraight();
+        }
+        else {}
+        digitalWrite(LED, HIGH);
+        rightservo();
+        left
+        
     }
    
 
