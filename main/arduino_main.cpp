@@ -82,7 +82,7 @@ void onDisconnectedGamepad(GamepadPtr gp) {
 
 Servo servoleft;
 Servo servoright;
-ESP32SharpIR sensor1( ESP32SharpIR::GP2Y0A21YK0F, 27);
+ESP32SharpIR sensor1( ESP32SharpIR::GP2Y0A21YK0F, 36);
 QTRSensors qtr;
 
 // Arduino setup function. Runs in CPU 1
@@ -105,18 +105,20 @@ servoright.attach(14,1000,2000);
 
     BP32.forgetBluetoothKeys();
 
-    // Serial.begin(115200);
-    // sensor1.setFilterRate(0.1f);
+     Serial.begin(115200);
+    sensor1.setFilterRate(0.1f);
+    //pinMode(36, INPUT);
 
-    // qtr.setTypeRC(); // or setTypeAnalog()
-    // qtr.setSensorPins((const uint8_t[]) {12,13,14}, 3);
-    // for (uint8_t i = 0; i < 250; i++)
-    // {
-    //     Serial.println("calibrating");
-    //     qtr.calibrate();
-    //     delay(20);
-    // }
-    // qtr.calibrate();
+    //qtr.setTypeRC(); // or 
+    //setTypeAnalog()
+ //   qtr.setSensorPins((const uint8_t[]) {36,39,34}, 3);
+   /* for (uint8_t i = 0; i < 250; i++)
+    {
+      //  Serial.println("calibrating");
+      //  qtr.calibrate();
+    //  delay(20);
+   // }
+     //qtr.calibrate();*/
 }
 void ledloop(){
 for (int i= 0; i < 2; i++){
@@ -126,7 +128,7 @@ digitalWrite(LED, LOW);
 delay(100);
 }
 }
- GamepadPtr controller = myGamepads[0];
+GamepadPtr controller = myGamepads[0];
 void rightservo(){
 servoright.write(((((float) controller -> axisY())/512.0f)*500) +1500);
 }
@@ -135,9 +137,6 @@ void leftservo(){
 servoleft.write(((((float) controller -> axisY())/512.0f)*500) +1500);
 }
 
-void gostraigt() {
-
-}
 
 #define DEFAULT_SPEED 2000
 
@@ -146,33 +145,44 @@ void loop() {
     // Just call this function in your main loop.
     // The gamepads pointer (the ones received in the callbacks) gets updated
     // automatically.
+    servoleft.write(2000);
+    
+    servoright.write(1000);
+   // delay(1000);
+   // servoleft.write(2000);
+    
+    //servoright.write(1000);
+    //delay(1000);
+
     BP32.update();
+    Serial.println( controller -> axisY());
+    //servoleft.write(1750);
     // ledloop();
 
-    /*servoleft.write(2000);
-    servoright.write(1000);
-    delay(1000);
-    servoleft.write(1000);
-    servoright.write(2000);
-    delay(1000);*/
-
-
+   /* int irValue = digitalRead(36);
+if(irValue == HIGH){
+    Serial.println("OBJECT");
+}
+else {
+    Serial.println("NO OBJ");
+}
+ delay(1000);*/
  
     
 
    
     if(controller && controller ->isConnected()){
         // Console.printf() // << to see values of controller
-        float controller_value_y = ((float) controller -> axisY()/512.0f)*500;
-        float controller_value_x = ((float) controller -> axisX()/512.0f)*500;
+        //float controller_value_y = ((float) controller -> axisY()/512.0f)*500;
+        //float controller_value_x = ((float) controller -> axisX()/512.0f)*500;
 
-        if((((float) controller -> axisY())/512.0f)*500) {
-            gostraight();
-        }
-        else {}
+       // if((((float) controller -> axisY())/512.0f)*500) {
+            
+       // }
+       // else {}
         digitalWrite(LED, HIGH);
         rightservo();
-        left
+         leftservo();
         
     }
    
@@ -208,10 +218,10 @@ void loop() {
        // }
    // }
 
-    // Serial.println(sensor1.getDistanceFloat());
+    Serial.println(sensor1.getDistanceFloat());
 
-    // uint16_t sensors[3];
-    // int16_t position = qtr.readLineBlack(sensors);
+     uint16_t sensors[3];
+    int16_t position = qtr.readLineBlack(sensors);
     // int16_t error = position - 1000;
     // if (error < 0)
     // {
