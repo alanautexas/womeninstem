@@ -145,17 +145,24 @@ void loop() {
     // Just call this function in your main loop.
     // The gamepads pointer (the ones received in the callbacks) gets updated
     // automatically.
+    
+    /* 10/16
+    servoleft.write(1000);
+    
+    servoright.write(2000);
+    delay(1000);
     servoleft.write(2000);
     
     servoright.write(1000);
-   // delay(1000);
-   // servoleft.write(2000);
-    
-    //servoright.write(1000);
-    //delay(1000);
+    delay(1000);
+    */
+
+
+
+
 
     BP32.update();
-    Serial.println( controller -> axisY());
+    // Serial.println( controller -> axisY());
     //servoleft.write(1750);
     // ledloop();
 
@@ -181,8 +188,11 @@ else {
        // }
        // else {}
         digitalWrite(LED, HIGH);
-        rightservo();
-         leftservo();
+        if((((((float) controller -> axisY())/512.0f)*500) > 0)){
+            servoright.write(((((float) controller -> axisY())/512.0f)*500) +1500);
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500 *(-1) +1500));
+        }
+
         
     }
    
@@ -218,10 +228,10 @@ else {
        // }
    // }
 
-    Serial.println(sensor1.getDistanceFloat());
+    // Serial.println(sensor1.getDistanceFloat());
 
-     uint16_t sensors[3];
-    int16_t position = qtr.readLineBlack(sensors);
+    //  uint16_t sensors[3];
+    // int16_t position = qtr.readLineBlack(sensors);
     // int16_t error = position - 1000;
     // if (error < 0)
     // {
