@@ -86,7 +86,7 @@ void onDisconnectedGamepad(GamepadPtr gp) {
 Servo servoleft;
 Servo servoright;
 
-ESP32SharpIR distance_sensor_1(ESP32SharpIR::GP2Y0A21YK0F, 36);
+ESP32SharpIR distance_sensor1(ESP32SharpIR::GP2Y0A21YK0F, 36);
 QTRSensors line_sensor; 
 
 // Setup controller
@@ -118,7 +118,7 @@ void setup() {
     servoright.attach(14,1000,2000);
 
     // Distance sensor setup
-    // distance_sensor_1.setFilterRate(0.1f);
+    distance_sensor1.setFilterRate(0.1f);
 
     // Line sensor setup
     // line_sensor.setTypeAnalog();
@@ -193,6 +193,7 @@ else {
             servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);//
             servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
         }
+
         //left and right 
         if(((((float) controller -> axisX())/512.0f)*500) > 0){//turn right
             servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
@@ -202,15 +203,9 @@ else {
             servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
             servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
         }
-
-
-
-        // servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-        // rightservo();
-        // leftservo();
-        
     }
    
+   Serial.println(distance_sensor1.getDistanceFloat());
 
     // It is safe to always do this before using the gamepad API.
     // This guarantees that the gamepad is valid and connected.
