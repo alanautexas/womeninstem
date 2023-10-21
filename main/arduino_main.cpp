@@ -188,9 +188,26 @@ else {
        // }
        // else {}
         digitalWrite(LED, HIGH);
+        
+        //forwards
         if((((((float) controller -> axisY())/512.0f)*500) > 0)){
             servoright.write(((((float) controller -> axisY())/512.0f)*500) +1500);
-            servoleft.write(((((float) controller -> axisY())/512.0f)*500 *(-1) +1500));
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500*(-1)) +1500);
+        }
+        //backwards
+        if((((((float) controller -> axisY())/512.0f)*500) < 0)){
+            servoright.write(((((float) controller -> axisY())/512.0f)*500) +1500);
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500*(-1)) +1500));
+        }
+        //right
+        if((((((float) controller -> axisx())/512.0f)*500) > 0)){
+            servoright.write(((((float) controller -> axisX())/512.0f)*500*(-1)) +1500);
+            servoleft.write(((((float) controller -> axisX())/512.0f)*500 +1500));
+        }
+        //left
+        if((((((float) controller -> axisX())/512.0f)*500) < 0)){
+            servoright.write(((((float) controller -> axisX())/512.0f)*500) +1500);
+            servoleft.write(((((float) controller -> axisX()))/512.0f)*500 *(-1) +1500));
         }
 
         
@@ -228,22 +245,32 @@ else {
        // }
    // }
 
-    // Serial.println(sensor1.getDistanceFloat());
+    Serial.println(sensor1.getDistanceFloat());
+    delay(500);
+
+    // if(sensor1.getDistanceFloat() < tooClose //we to determine a vaue for tooClose){
+    //     servoright.write(1000);
+    //     servoleft.write(2000);
+    // }
 
     //  uint16_t sensors[3];
     // int16_t position = qtr.readLineBlack(sensors);
     // int16_t error = position - 1000;
     // if (error < 0)
     // {
-    //     Serial.println("On the left");
+    //     // Serial.println("On the left");
+    //     servoright.write(error * (calibrationValue)*(-1)+1500); // we need to figure out the calibrationValue !!
+    //     servoleft.write(error * (calibrationValue) + 1500);
     // }
     // if (error > 0)
     // {
-    //     Serial.println("On the right");
+    //     // Serial.println("On the right");
+    //     servoright.write(error * (calibrationValue) + 1500);
+    //     servoleft.write(error * (calibrationValue)*(-1) +1500);
     // }
     // if(error == 0){
-    //     Serial.println("Straight Ahead");  
+    //     // Serial.println("Straight Ahead");  
     // }
-    vTaskDelay(1);
+    // vTaskDelay(1);
     // delay(100);
 }
