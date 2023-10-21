@@ -12,7 +12,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 limitations under the License.
 ****************************************************************************/
-#define LED 2
 
 #include "sdkconfig.h"
 #ifndef CONFIG_BLUEPAD32_PLATFORM_ARDUINO
@@ -25,6 +24,9 @@ limitations under the License.
 #include <ESP32Servo.h>
 #include <ESP32SharpIR.h>
 #include <QTRSensors.h>
+
+// Definitions for sensors
+#define LED 2   // LED output pin
 
 //
 // README FIRST, README FIRST, README FIRST
@@ -80,71 +82,80 @@ void onDisconnectedGamepad(GamepadPtr gp) {
     }
 }
 
+// Initialized servos and sensors
 Servo servoleft;
 Servo servoright;
-ESP32SharpIR sensor1( ESP32SharpIR::GP2Y0A21YK0F, 36);
-QTRSensors qtr;
+
+ESP32SharpIR distance_sensor1(ESP32SharpIR::GP2Y0A21YK0F, 36);
+QTRSensors line_sensor; 
+
+// Setup controller
+// GamepadPtr controller = myGamepads[0];
 
 // Arduino setup function. Runs in CPU 1
 void setup() {
-servoleft.setPeriodHertz(50);
-servoleft.attach(13,1000,2000);
-pinMode (LED, OUTPUT);
-servoright.setPeriodHertz(50);
-servoright.attach(14,1000,2000);
-
-
-
-
     // Console.printf("Firmware: %s\n", BP32.firmwareVersion());
 
     // Setup the Bluepad32 callbacks
     BP32.setup(&onConnectedGamepad, &onDisconnectedGamepad);
-
-    
-
     BP32.forgetBluetoothKeys();
 
-     Serial.begin(115200);
-    sensor1.setFilterRate(0.1f);
-    //pinMode(36, INPUT);
+    // Serial setup
+    Serial.begin(115200);
 
-    //qtr.setTypeRC(); // or 
-    //setTypeAnalog()
- //   qtr.setSensorPins((const uint8_t[]) {36,39,34}, 3);
-   /* for (uint8_t i = 0; i < 250; i++)
-    {
-      //  Serial.println("calibrating");
-      //  qtr.calibrate();
-    //  delay(20);
-   // }
-     //qtr.calibrate();*/
-}
-void ledloop(){
-for (int i= 0; i < 2; i++){
-    digitalWrite(LED, HIGH);
-    delay(100);
-digitalWrite(LED, LOW);
-delay(100);
-}
-}
-GamepadPtr controller = myGamepads[0];
-void rightservo(){
-servoright.write(((((float) controller -> axisY())/512.0f)*500) +1500);
+    // LED setup
+    pinMode(LED, OUTPUT);
+
+    // Servo setup
+    // ESP32PWM::allocateTimer(0);
+	// ESP32PWM::allocateTimer(1);
+	// ESP32PWM::allocateTimer(2);
+	// ESP32PWM::allocateTimer(3);
+    servoleft.setPeriodHertz(50);
+    servoleft.attach(13,1000,2000);
+    
+    servoright.setPeriodHertz(50);
+    servoright.attach(14,1000,2000);
+
+    // Distance sensor setup
+    distance_sensor1.setFilterRate(0.1f);
+
+    // Line sensor setup
+    // line_sensor.setTypeAnalog();
+    // line_sensor.setSensorPins((const uint8_t[]) {36,39,34}, 3);
+    // for (uint8_t i = 0; i < 250; i++)
+    // {
+    //     Serial.println("calibrating");
+    //     line_sensor.calibrate();
+    //     delay(20);
+    // }
 }
 
-void leftservo(){
-servoleft.write(((((float) controller -> axisY())/512.0f)*500) +1500);
-}
+// Functions
 
+// void LED_loop() {
+    // for (int i= 0; i < 2; i++){
+    //     digitalWrite(LED, HIGH);
+    //     delay(100);
+    // digitalWrite(LED, LOW);
+    // delay(100);
+    // }
+// }
 
-#define DEFAULT_SPEED 2000
+// void rightservo() {
+//     servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+// }
+
+// void leftservo() {
+//     servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+// }
 
 void loop() {
     // This call fetches all the gamepad info from the NINA (ESP32) module.
     // Just call this function in your main loop.
     // The gamepads pointer (the ones received in the callbacks) gets updated
     // automatically.
+<<<<<<< HEAD
     
     /* 10/16
     servoleft.write(1000);
@@ -165,6 +176,22 @@ void loop() {
     // Serial.println( controller -> axisY());
     //servoleft.write(1750);
     // ledloop();
+=======
+
+    BP32.update();
+
+    // LED_loop();
+
+    // servoleft.write(2000);
+    
+    // servoright.write(1000);
+    // delay(1000);
+    // servoleft.write(2000);
+    
+    //servoright.write(1000);
+    //delay(1000);
+
+>>>>>>> 7d35a2eba8c0f60943183dc003edbaeeb60f40ab
 
    /* int irValue = digitalRead(36);
 if(irValue == HIGH){
@@ -174,20 +201,10 @@ else {
     Serial.println("NO OBJ");
 }
  delay(1000);*/
- 
-    
-
-   
-    if(controller && controller ->isConnected()){
-        // Console.printf() // << to see values of controller
-        //float controller_value_y = ((float) controller -> axisY()/512.0f)*500;
-        //float controller_value_x = ((float) controller -> axisX()/512.0f)*500;
-
-       // if((((float) controller -> axisY())/512.0f)*500) {
-            
-       // }
-       // else {}
+    GamepadPtr controller = myGamepads[0];
+    if(controller && controller ->isConnected()) {
         digitalWrite(LED, HIGH);
+<<<<<<< HEAD
         
         //forwards
         if((((((float) controller -> axisY())/512.0f)*500) > 0)){
@@ -211,8 +228,33 @@ else {
         }
 
         
+=======
+        Serial.println("connected");
+
+        //back forward
+        if(((((float) controller -> axisY())/512.0f)*500) < 0){ //straight forward
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500 ) + 1500);
+            servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
+        }
+
+        if(((((float) controller -> axisY())/512.0f)*500) > 0){ //straight backward
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);//
+            servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
+        }
+
+        //left and right 
+        if(((((float) controller -> axisX())/512.0f)*500) > 0){//turn right
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+            servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+        }
+        if(((((float) controller -> axisX())/512.0f)*500) < 0){//turn left
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+            servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+        }
+>>>>>>> 7d35a2eba8c0f60943183dc003edbaeeb60f40ab
     }
    
+   Serial.println(distance_sensor1.getDistanceFloat());
 
     // It is safe to always do this before using the gamepad API.
     // This guarantees that the gamepad is valid and connected.
@@ -245,6 +287,7 @@ else {
        // }
    // }
 
+<<<<<<< HEAD
     Serial.println(sensor1.getDistanceFloat());
     delay(500);
 
@@ -253,6 +296,10 @@ else {
     //     servoleft.write(2000);
     // }
 
+=======
+    // Serial.println(sensor1.getDistanceFloat());
+
+>>>>>>> 7d35a2eba8c0f60943183dc003edbaeeb60f40ab
     //  uint16_t sensors[3];
     // int16_t position = qtr.readLineBlack(sensors);
     // int16_t error = position - 1000;
