@@ -133,14 +133,14 @@ void setup() {
 
 // Functions
 
-// void LED_loop() {
-    // for (int i= 0; i < 2; i++){
-    //     digitalWrite(LED, HIGH);
-    //     delay(100);
-    // digitalWrite(LED, LOW);
-    // delay(100);
-    // }
-// }
+void LED_loop() {
+    for (int i= 0; i < 2; i++){
+        digitalWrite(LED, HIGH);
+        delay(100);
+    digitalWrite(LED, LOW);
+    delay(100);
+    }
+}
 
 // void rightservo() {
 //     servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
@@ -155,107 +155,79 @@ void loop() {
     // Just call this function in your main loop.
     // The gamepads pointer (the ones received in the callbacks) gets updated
     // automatically.
-<<<<<<< HEAD
-    
-    /* 10/16
-    servoleft.write(1000);
-    
-    servoright.write(2000);
-    delay(1000);
-    servoleft.write(2000);
-    
-    servoright.write(1000);
-    delay(1000);
-    */
-
-
-
-
-
-    BP32.update();
-    // Serial.println( controller -> axisY());
-    //servoleft.write(1750);
-    // ledloop();
-=======
 
     BP32.update();
 
+    // Brownout code
+ 
+
+    // Blinky LED
     // LED_loop();
 
+    // Move Chassis (straight and back)
+     //servoleft.write(1000);    
+     //servoright.write(2000);
+    // delay(1000);
+
     // servoleft.write(2000);
-    
     // servoright.write(1000);
     // delay(1000);
-    // servoleft.write(2000);
+
+    // Something else for line sensor
     
-    //servoright.write(1000);
-    //delay(1000);
+ 
 
->>>>>>> 7d35a2eba8c0f60943183dc003edbaeeb60f40ab
-
-   /* int irValue = digitalRead(36);
-if(irValue == HIGH){
-    Serial.println("OBJECT");
-}
-else {
-    Serial.println("NO OBJ");
-}
- delay(1000);*/
-    GamepadPtr controller = myGamepads[0];
-    if(controller && controller ->isConnected()) {
-        digitalWrite(LED, HIGH);
-<<<<<<< HEAD
-        
-        //forwards
-        if((((((float) controller -> axisY())/512.0f)*500) > 0)){
-            servoright.write(((((float) controller -> axisY())/512.0f)*500) +1500);
-            servoleft.write(((((float) controller -> axisY())/512.0f)*500*(-1)) +1500);
-        }
-        //backwards
-        if((((((float) controller -> axisY())/512.0f)*500) < 0)){
-            servoright.write(((((float) controller -> axisY())/512.0f)*500) +1500);
-            servoleft.write(((((float) controller -> axisY())/512.0f)*500*(-1)) +1500));
-        }
-        //right
-        if((((((float) controller -> axisx())/512.0f)*500) > 0)){
-            servoright.write(((((float) controller -> axisX())/512.0f)*500*(-1)) +1500);
-            servoleft.write(((((float) controller -> axisX())/512.0f)*500 +1500));
-        }
-        //left
-        if((((((float) controller -> axisX())/512.0f)*500) < 0)){
-            servoright.write(((((float) controller -> axisX())/512.0f)*500) +1500);
-            servoleft.write(((((float) controller -> axisX()))/512.0f)*500 *(-1) +1500));
-        }
-
-        
-=======
-        Serial.println("connected");
-
-        //back forward
-        if(((((float) controller -> axisY())/512.0f)*500) < 0){ //straight forward
-            servoleft.write(((((float) controller -> axisY())/512.0f)*500 ) + 1500);
-            servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
-        }
-
-        if(((((float) controller -> axisY())/512.0f)*500) > 0){ //straight backward
-            servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);//
-            servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
-        }
-
-        //left and right 
-        if(((((float) controller -> axisX())/512.0f)*500) > 0){//turn right
-            servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-            servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-        }
-        if(((((float) controller -> axisX())/512.0f)*500) < 0){//turn left
-            servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-            servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-        }
->>>>>>> 7d35a2eba8c0f60943183dc003edbaeeb60f40ab
+    // Distance sensor
+  // Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+    // delay(100);
+if(distance_sensor1.getDistanceFloat() <= 18.0){
+         Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+        servoleft.write(1500);
+       servoright.write(1500);
+        delay(1000);
     }
-   
-   Serial.println(distance_sensor1.getDistanceFloat());
+    else{
+         Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+        servoleft.write(2000);
+       servoright.write(1000);
+        delay(1000);
+    }
 
+    // GamepadPtr controller = myGamepads[0];
+    // if(controller && controller ->isConnected()) {
+    //     digitalWrite(LED, HIGH);
+    //     Serial.println("connected");
+
+    //     //back forward
+    //     if(((((float) controller -> axisY())/512.0f)*500) < 0){ //straight forward
+    //         servoleft.write(((((float) controller -> axisY())/512.0f)*500 ) + 1500);
+    //         servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
+    //     }
+
+    //     if(((((float) controller -> axisY())/512.0f)*500) > 0){ //straight backward
+    //         servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);//
+    //         servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
+    //     }
+
+    //     //left and right 
+    //     if(((((float) controller -> axisX())/512.0f)*500) > 0){//turn right
+    //         servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+    //         servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+    //     }
+    //     if(((((float) controller -> axisX())/512.0f)*500) < 0){//turn left
+    //         servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+    //         servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+    //     }
+    // }
+   
+    vTaskDelay(1);
+    //delay(100);
+
+
+
+
+
+   // STARTER CODE 
     // It is safe to always do this before using the gamepad API.
     // This guarantees that the gamepad is valid and connected.
     //for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
@@ -287,20 +259,9 @@ else {
        // }
    // }
 
-<<<<<<< HEAD
-    Serial.println(sensor1.getDistanceFloat());
-    delay(500);
-
-    // if(sensor1.getDistanceFloat() < tooClose //we to determine a vaue for tooClose){
-    //     servoright.write(1000);
-    //     servoleft.write(2000);
-    // }
-
-=======
     // Serial.println(sensor1.getDistanceFloat());
 
->>>>>>> 7d35a2eba8c0f60943183dc003edbaeeb60f40ab
-    //  uint16_t sensors[3];
+    // uint16_t sensors[3];
     // int16_t position = qtr.readLineBlack(sensors);
     // int16_t error = position - 1000;
     // if (error < 0)
@@ -318,6 +279,6 @@ else {
     // if(error == 0){
     //     // Serial.println("Straight Ahead");  
     // }
-    // vTaskDelay(1);
+   // vTaskDelay(1);
     // delay(100);
 }
