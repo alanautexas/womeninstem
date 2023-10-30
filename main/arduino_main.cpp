@@ -182,7 +182,7 @@ void loop() {
     // delay(250);
      
 
-if(distance_sensor1.getDistanceFloat() < 13.0){
+/*if(distance_sensor1.getDistanceFloat() < 13.0){
          //Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
         servoleft.write(1000);
        servoright.write(2000);
@@ -206,7 +206,7 @@ if(distance_sensor1.getDistanceFloat() < 13.0){
         servoleft.write(2000);
        servoright.write(1000);
         //delay(1000);
-    }
+    }*/
 
 //    delay(250);
     // GamepadPtr controller = myGamepads[0];
@@ -281,23 +281,24 @@ if(distance_sensor1.getDistanceFloat() < 13.0){
     int16_t position = line_sensor.readLineBlack(sensors);
     int16_t error = position - 1000;
     Serial.println(error);
-     if (error < 0)
+     if (error < 0 && error >-20)
     {
      Serial.println("On the side");
     //     servoright.write(error * (calibrationValue)*(-1)+1500); // we need to figure out the calibrationValue !!
     //     servoleft.write(error * (calibrationValue) + 1500);
     servoright.write(1500);
     servoleft.write(2000);
-    // }
-    if (error > 0)
-    {
-    //     // Serial.println("On the right");
+    
+    }
+   
+    else {
+        Serial.println("On the line");
     //     servoright.write(error * (calibrationValue) + 1500);
     //     servoleft.write(error * (calibrationValue)*(-1) +1500);
+    servoright.write(1000);
+    servoleft.write(1500);
      }
-    // if(error == 0){
-    //     // Serial.println("Straight Ahead");  
-     }
+   
    // vTaskDelay(1);
     // delay(100);
 }
