@@ -121,14 +121,14 @@ void setup() {
     distance_sensor1.setFilterRate(0.1f);
 
     // Line sensor setup
-    // line_sensor.setTypeAnalog();
-    // line_sensor.setSensorPins((const uint8_t[]) {36,39,34}, 3);
-    // for (uint8_t i = 0; i < 250; i++)
-    // {
-    //     Serial.println("calibrating");
-    //     line_sensor.calibrate();
-    //     delay(20);
-    // }
+    line_sensor.setTypeAnalog();
+    line_sensor.setSensorPins((const uint8_t[]) {39,34,35}, 3);
+    for (uint8_t i = 0; i < 250; i++)
+    {
+        Serial.println("calibrating");
+        line_sensor.calibrate();
+        delay(20);
+    }
 }
 
 // Functions
@@ -169,7 +169,7 @@ void loop() {
      //servoright.write(2000);
     // delay(1000);
 
-    // servoleft.write(2000);
+     //servoleft.write(1500);
     // servoright.write(1000);
     // delay(1000);
 
@@ -179,20 +179,36 @@ void loop() {
 
     // Distance sensor
   // Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
-    // delay(100);
-if(distance_sensor1.getDistanceFloat() <= 18.0){
-         Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
-        servoleft.write(1500);
-       servoright.write(1500);
-        delay(1000);
+    // delay(250);
+     
+
+if(distance_sensor1.getDistanceFloat() < 13.0){
+         //Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+        servoleft.write(1000);
+       servoright.write(2000);
+      
+        //servoleft.write(1000);
+       //servoright.write(1500);
+
+      // servoleft.write(1000);
+      // servoright.write(2000);
+
+        //delay(1000);
     }
+  else if (distance_sensor1.getDistanceFloat()  >= 13.0 && distance_sensor1.getDistanceFloat() < 18.0){
+//Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+        servoleft.write(1500);
+       servoright.write(2000);
+     }
+     
     else{
-         Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+        //Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
         servoleft.write(2000);
        servoright.write(1000);
-        delay(1000);
+        //delay(1000);
     }
 
+//    delay(250);
     // GamepadPtr controller = myGamepads[0];
     // if(controller && controller ->isConnected()) {
     //     digitalWrite(LED, HIGH);
@@ -261,24 +277,27 @@ if(distance_sensor1.getDistanceFloat() <= 18.0){
 
     // Serial.println(sensor1.getDistanceFloat());
 
-    // uint16_t sensors[3];
-    // int16_t position = qtr.readLineBlack(sensors);
-    // int16_t error = position - 1000;
-    // if (error < 0)
-    // {
-    //     // Serial.println("On the left");
+  uint16_t sensors[3];
+    int16_t position = line_sensor.readLineBlack(sensors);
+    int16_t error = position - 1000;
+    Serial.println(error);
+     if (error < 0)
+    {
+     Serial.println("On the side");
     //     servoright.write(error * (calibrationValue)*(-1)+1500); // we need to figure out the calibrationValue !!
     //     servoleft.write(error * (calibrationValue) + 1500);
+    servoright.write(1500);
+    servoleft.write(2000);
     // }
-    // if (error > 0)
-    // {
+    if (error > 0)
+    {
     //     // Serial.println("On the right");
     //     servoright.write(error * (calibrationValue) + 1500);
     //     servoleft.write(error * (calibrationValue)*(-1) +1500);
-    // }
+     }
     // if(error == 0){
     //     // Serial.println("Straight Ahead");  
-    // }
+     }
    // vTaskDelay(1);
     // delay(100);
 }
