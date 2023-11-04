@@ -18,6 +18,10 @@ limitations under the License.
 #error "Must only be compiled when using Bluepad32 Arduino platform"
 #endif  // !CONFIG_BLUEPAD32_PLATFORM_ARDUINO
 
+#include <Wire.h>
+#include <Arduino_APDS9960.h>
+#include <bits/stdc++.h>
+
 #include <Arduino.h>
 #include <Bluepad32.h>
 
@@ -27,6 +31,17 @@ limitations under the License.
 
 // Definitions for sensors
 #define LED 2   // LED output pin
+#define APDS9960_INT 2
+#define I2C_SDA 21
+#define I2C_SCL 22
+#define I2C_FREQ 100000
+
+//Color sensor unit and I2C Unit 
+TwoWire I2C_0 =  TwoWire (0);
+APDS9960 apds = APDS9960 (I2C_0, APDS9960_INT);
+
+
+
 
 //
 // README FIRST, README FIRST, README FIRST
@@ -100,6 +115,11 @@ void setup() {
     BP32.setup(&onConnectedGamepad, &onDisconnectedGamepad);
     BP32.forgetBluetoothKeys();
 
+    I2C_0.begin (I2C_SDA, I2C_SCL, I2C_FREQ);
+
+apds.setInterruptPin(APDS9960_INT);
+apds.begin();
+
     // Serial setup
     Serial.begin(115200);
 
@@ -111,24 +131,27 @@ void setup() {
 	// ESP32PWM::allocateTimer(1);
 	// ESP32PWM::allocateTimer(2);
 	// ESP32PWM::allocateTimer(3);
-    servoleft.setPeriodHertz(50);
+   /* servoleft.setPeriodHertz(50);
     servoleft.attach(13,1000,2000);
     
     servoright.setPeriodHertz(50);
-    servoright.attach(14,1000,2000);
+    servoright.attach(14,1000,2000);*/
 
     // Distance sensor setup
     distance_sensor1.setFilterRate(0.1f);
 
     // Line sensor setup
-    line_sensor.setTypeAnalog();
+   /* line_sensor.setTypeAnalog();
     line_sensor.setSensorPins((const uint8_t[]) {39,34,35}, 3);
     for (uint8_t i = 0; i < 250; i++)
     {
         Serial.println("calibrating");
         line_sensor.calibrate();
         delay(20);
-    }
+    }*/
+
+
+
 }
 
 // Functions
@@ -180,10 +203,54 @@ void loop() {
     // Distance sensor
   // Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
     // delay(250);
-     
+     int r,g,b,a;
+     while(!apds.colorAvailable()){
+delay(500);
+     }
+apds.readColor(r, g, b, a);
 
+Serial.print(" RED:");
+Serial.print(r);
+Serial.println(" GREEN:");
+Serial.print(g);
+Serial.println(" BLUE:");
+Serial.print(b);
+Serial.println(" AMBIENT:");
+Serial.print(a);
+Serial.println();
+
+if(r > g && r > b){
+for (int i= 0; i < 2; i++){
+        digitalWrite(LED, HIGH);
+        delay(200);
+    digitalWrite(LED, LOW);
+    delay(200);
+    }
+
+delay(1000);
+}
+
+if(g > r && g > b){
+    for (int i= 0; i < 3; i++){
+        digitalWrite(LED, HIGH);
+        delay(200);
+    digitalWrite(LED, LOW);
+    delay(200);
+    }
+   delay(1000); 
+}
+
+if( b > g && b > r){
+    for (int i= 0; i < 4; i++){
+        digitalWrite(LED, HIGH);
+        delay(200);
+    digitalWrite(LED, LOW);
+    delay(200);
+    } 
+    delay(1000);
+}
 /*if(distance_sensor1.getDistanceFloat() < 13.0){
-         //Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+         Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
         servoleft.write(1000);
        servoright.write(2000);
       
@@ -196,13 +263,13 @@ void loop() {
         //delay(1000);
     }
   else if (distance_sensor1.getDistanceFloat()  >= 13.0 && distance_sensor1.getDistanceFloat() < 18.0){
-//Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
         servoleft.write(1500);
        servoright.write(2000);
      }
      
     else{
-        //Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+        Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
         servoleft.write(2000);
        servoright.write(1000);
         //delay(1000);
@@ -277,7 +344,7 @@ void loop() {
 
     // Serial.println(sensor1.getDistanceFloat());
 
-  uint16_t sensors[3];
+ /*uint16_t sensors[3];
     int16_t position = line_sensor.readLineBlack(sensors);
     int16_t error = position - 1000;
     Serial.println(error);
@@ -297,7 +364,7 @@ void loop() {
     //     servoleft.write(error * (calibrationValue)*(-1) +1500);
     servoright.write(1000);
     servoleft.write(1500);
-     }
+     }*/
    
    // vTaskDelay(1);
     // delay(100);
