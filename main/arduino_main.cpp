@@ -18,6 +18,10 @@ limitations under the License.
 #error "Must only be compiled when using Bluepad32 Arduino platform"
 #endif  // !CONFIG_BLUEPAD32_PLATFORM_ARDUINO
 
+#include <Wire.h>
+#include <Arduino_APDS9960.h>
+ #include <bits/stdc++.h>
+
 #include <Arduino.h>
 #include <Bluepad32.h>
 
@@ -27,6 +31,17 @@ limitations under the License.
 
 // Definitions for sensors
 #define LED 2   // LED output pin
+#define APDS9960_INT 2
+#define I2C_SDA 21
+#define I2C_SCL 22
+#define I2C_FREQ 100000
+
+//Color sensor unit and I2C Unit 
+TwoWire I2C_0 =  TwoWire (0);
+APDS9960 apds = APDS9960 (I2C_0, APDS9960_INT);
+
+
+
 
 //
 // README FIRST, README FIRST, README FIRST
@@ -90,15 +105,20 @@ ESP32SharpIR distance_sensor1(ESP32SharpIR::GP2Y0A21YK0F, 36);
 QTRSensors line_sensor; 
 
 // Setup controller
-// GamepadPtr controller = myGamepads[0];
+GamepadPtr controller = myGamepads[0];
 
 // Arduino setup function. Runs in CPU 1
 void setup() {
-    // Console.printf("Firmware: %s\n", BP32.firmwareVersion());
+    Console.printf("Firmware: %s\n", BP32.firmwareVersion());
 
     // Setup the Bluepad32 callbacks
     BP32.setup(&onConnectedGamepad, &onDisconnectedGamepad);
     BP32.forgetBluetoothKeys();
+
+    I2C_0.begin (I2C_SDA, I2C_SCL, I2C_FREQ);
+
+apds.setInterruptPin(APDS9960_INT);
+apds.begin();
 
     // Serial setup
     Serial.begin(115200);
@@ -106,11 +126,11 @@ void setup() {
     // LED setup
     pinMode(LED, OUTPUT);
 
-    // Servo setup
-    // ESP32PWM::allocateTimer(0);
-	// ESP32PWM::allocateTimer(1);
-	// ESP32PWM::allocateTimer(2);
-	// ESP32PWM::allocateTimer(3);
+    //Servo setup
+    ESP32PWM::allocateTimer(0);
+	ESP32PWM::allocateTimer(1);
+	ESP32PWM::allocateTimer(2);
+	ESP32PWM::allocateTimer(3);
     servoleft.setPeriodHertz(50);
     servoleft.attach(13,1000,2000);
     
@@ -121,17 +141,18 @@ void setup() {
     distance_sensor1.setFilterRate(0.1f);
 
     // Line sensor setup
-    // line_sensor.setTypeAnalog();
-    // line_sensor.setSensorPins((const uint8_t[]) {36,39,34}, 3);
-    // for (uint8_t i = 0; i < 250; i++)
-    // {
-    //     Serial.println("calibrating");
-    //     line_sensor.calibrate();
-    //     delay(20);
-    // }
-}
+    line_sensor.setTypeAnalog();
+    line_sensor.setSensorPins((const uint8_t[]) {39,34,35}, 3);
+    for (uint8_t i = 0; i < 250; i++)
+    {
+        Serial.println("calibrating");
+        line_sensor.calibrate();
+        delay(20);
+    }
 
-// Functions
+
+
+}
 
 void LED_loop() {
     for (int i= 0; i < 2; i++){
@@ -151,10 +172,6 @@ void LED_loop() {
 // }
 
 void loop() {
-    // This call fetches all the gamepad info from the NINA (ESP32) module.
-    // Just call this function in your main loop.
-    // The gamepads pointer (the ones received in the callbacks) gets updated
-    // automatically.
 
     BP32.update();
 
@@ -169,7 +186,7 @@ void loop() {
      //servoright.write(2000);
     // delay(1000);
 
-    // servoleft.write(2000);
+     //servoleft.write(1500);
     // servoright.write(1000);
     // delay(1000);
 
@@ -179,49 +196,154 @@ void loop() {
 
     // Distance sensor
   // Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
-    // delay(100);
-if(distance_sensor1.getDistanceFloat() <= 18.0){
+    // delay(250);
+
+Servo servoArm;
+servoArm.setPeriodHertz(50);
+servoArm.attach(27,1000,2000);
+// bool throws = false;
+
+
+
+
+
+
+//      int r,g,b,a;
+//      while(!apds.colorAvailable()){
+// delay(500);
+//      }
+// apds.readColor(r, g, b, a);
+
+// Serial.print(" RED:");
+// Serial.print(r);
+// Serial.println(" GREEN:");
+// Serial.print(g);
+// Serial.println(" BLUE:");
+// Serial.print(b);
+// Serial.println(" AMBIENT:");
+// Serial.print(a);
+// Serial.println();
+
+// if(r > g && r > b){
+// for (int i= 0; i < 2; i++){
+//         digitalWrite(LED, HIGH);
+//         delay(200);
+//     digitalWrite(LED, LOW);
+//     delay(200);
+//     }
+
+// delay(1000);
+// }
+
+// if(g > r && g > b){
+//     for (int i= 0; i < 3; i++){
+//         digitalWrite(LED, HIGH);
+//         delay(200);
+//     digitalWrite(LED, LOW);
+//     delay(200);
+//     }
+//    delay(1000); 
+// }
+
+// if( b > g && b > r){
+//     for (int i= 0; i < 4; i++){
+//         digitalWrite(LED, HIGH);
+//         delay(200);
+//     digitalWrite(LED, LOW);
+//     delay(200);
+//     } 
+//     delay(1000);
+// }
+/*if(distance_sensor1.getDistanceFloat() < 13.0){
          Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
-        servoleft.write(1500);
-       servoright.write(1500);
-        delay(1000);
+        servoleft.write(1000);
+       servoright.write(2000);
+      
+        //servoleft.write(1000);
+       //servoright.write(1500);
+
+      // servoleft.write(1000);
+      // servoright.write(2000);
+
+        //delay(1000);
     }
+  else if (distance_sensor1.getDistanceFloat()  >= 13.0 && distance_sensor1.getDistanceFloat() < 18.0){
+Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+        servoleft.write(1500);
+       servoright.write(2000);
+     }
+     
     else{
-         Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
+        Serial.println(distance_sensor1.getDistanceFloat()); // Read from sensor
         servoleft.write(2000);
        servoright.write(1000);
-        delay(1000);
-    }
+        //delay(1000);
+    }*/
 
-    // GamepadPtr controller = myGamepads[0];
-    // if(controller && controller ->isConnected()) {
-    //     digitalWrite(LED, HIGH);
-    //     Serial.println("connected");
+    GamepadPtr controller = myGamepads[0];
+    if(controller && controller ->isConnected()) {
+        digitalWrite(LED, HIGH);
+        Serial.println("connected");
+        servoleft.write(1500);
+        servoright.write(1500);
 
-    //     //back forward
-    //     if(((((float) controller -> axisY())/512.0f)*500) < 0){ //straight forward
-    //         servoleft.write(((((float) controller -> axisY())/512.0f)*500 ) + 1500);
-    //         servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
-    //     }
+       // back forward
+        if(((((float) controller -> axisY())/512.0f)*500) > 0){ //straight forward
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
+            servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
+        }
 
-    //     if(((((float) controller -> axisY())/512.0f)*500) > 0){ //straight backward
-    //         servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);//
-    //         servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
-    //     }
+        if(((((float) controller -> axisY())/512.0f)*500) < 0){ //straight backward
+            servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);//
+            servoright.write(((((float) controller -> axisY())/512.0f)*500*(-1)) + 1500);
+        }
 
-    //     //left and right 
-    //     if(((((float) controller -> axisX())/512.0f)*500) > 0){//turn right
-    //         servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-    //         servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-    //     }
-    //     if(((((float) controller -> axisX())/512.0f)*500) < 0){//turn left
-    //         servoleft.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-    //         servoright.write(((((float) controller -> axisY())/512.0f)*500) + 1500);
-    //     }
-    // }
+        //left and right 
+        if(((((float) controller -> axisX())/512.0f)*500) > 0){//turn right
+            servoleft.write(((((float) controller -> axisX()))/512.0f)*500+ 1500);
+            servoright.write(((((float) controller -> axisX())/512.0f)*500) + 1500);
+        }
+        if(((((float) controller -> axisX())/512.0f)*500) < 0){//turn left
+            servoleft.write(((((float) controller -> axisX())/512.0f)*500) + 1500);
+            servoright.write(((((float) controller -> axisX())/512.0f)*500) + 1500);
+        }
+
+
+        //SERVOARM !!!!
+        servoArm.write(1500);
+          if(((((float) controller ->axisRY())/512.0f)*500) > 0){ //straight forward
+            servoArm.write(((((float) controller -> axisRY())/512.0f)*500*(-1)) + 1500);
+        }
+
+        if(((((float) controller ->axisRY())/512.0f)*500) < 0){ //straight backward
+            servoArm.write(((((float) controller -> axisRY())/512.0f)*500*(-1)) + 1500);
+        }
+
+
+
+
+
+        // if(controller ->()){
+        //     throws = true;
+        //     Serial.print("slayed");
+
+        //     if (throws == true){
+        //         Serial.print(" RED:");
+        //         servoArm.write(1500);
+        //         Serial.print("before delay");
+        //         //delay(500);
+        //        // Serial.print("after delay");
+        //         throws = false;
+        //     }
+        //     Serial.print("left if");
+
+
+        // }
+   }
+    
    
     vTaskDelay(1);
-    //delay(100);
+    delay(100);
 
 
 
@@ -261,24 +383,29 @@ if(distance_sensor1.getDistanceFloat() <= 18.0){
 
     // Serial.println(sensor1.getDistanceFloat());
 
-    // uint16_t sensors[3];
-    // int16_t position = qtr.readLineBlack(sensors);
-    // int16_t error = position - 1000;
-    // if (error < 0)
+ uint16_t sensors[3];
+    int16_t position = line_sensor.readLineBlack(sensors);
+    int16_t error = position - 1000;
+    Serial.println(error);
+    //  if (error < 0 && error >-20)
     // {
-    //     // Serial.println("On the left");
+    //  Serial.println("On the side");
     //     servoright.write(error * (calibrationValue)*(-1)+1500); // we need to figure out the calibrationValue !!
     //     servoleft.write(error * (calibrationValue) + 1500);
+    // servoright.write(1500);
+    // servoleft.write(2000);
+    
     // }
-    // if (error > 0)
-    // {
-    //     // Serial.println("On the right");
-    //     servoright.write(error * (calibrationValue) + 1500);
-    //     servoleft.write(error * (calibrationValue)*(-1) +1500);
-    // }
-    // if(error == 0){
-    //     // Serial.println("Straight Ahead");  
-    // }
-   // vTaskDelay(1);
-    // delay(100);
-}
+   
+    // else {
+    //     Serial.println("On the line");
+    // //     servoright.write(error * (calibrationValue) + 1500);
+    // //     servoleft.write(error * (calibrationValue)*(-1) +1500);
+    // servoright.write(1000);
+    // servoleft.write(1500);
+    //  }
+   
+   vTaskDelay(1);
+    delay(100);
+    }
+
